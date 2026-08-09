@@ -10,7 +10,7 @@
   "currentStatus": "Payment Confirmed",
   "currentLocation": "",
   "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-09T13:26:27.816Z",
+  "updatedAt": "2026-08-09T13:28:17.588Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -21,6 +21,12 @@
     {
       "status": "Payment Confirmed",
       "date": "2026-08-09T13:26:27.816Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Payment Confirmed",
+      "date": "2026-08-09T13:28:17.588Z",
       "note": "Order received and confirmed in system.",
       "location": ""
     }
