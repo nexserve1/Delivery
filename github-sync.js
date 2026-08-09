@@ -77,63 +77,95 @@ async function ghGetFileSha(path){
   return data.sha;
 }
 
-/* Push (create or update) one order's public JSON file to GitHub. */
-async function pushOrderToGitHub(order){
-  if(!isGithubSyncConfigured()) return { ok:false, skipped:true };
+/* Push (create or update) one order's public JSON file to GitHub.
+   Retries automatically if GitHub rejects the write because the file
+   changed between reading its SHA and writing (a 409 conflict) — this
+   can happen if you update the same order's status twice in quick
+   succession. */
+async function pushOrderToGitHubAttempt(order, attempt){
   const cfg = resolveGitHubRepoInfo();
   const path = ghFilePath(order.trackingId);
-  try{
-    const sha = await ghGetFileSha(path);
-    const body = {
-      message: `Update order ${order.trackingId} — ${order.currentStatus}`,
-      content: b64EncodeUnicode(JSON.stringify(buildPublicOrder(order), null, 2)),
-      branch: cfg.branch
-    };
-    if(sha) body.sha = sha;
-    const res = await fetch(ghApiUrl(path), {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${getGithubToken()}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-    if(!res.ok){
-      const errText = await res.text();
-      throw new Error(`GitHub push failed (${res.status}): ${errText.slice(0,150)}`);
-    }
-    localStorage.setItem('nexserve_last_gh_sync', new Date().toISOString());
-    return { ok:true };
-  }catch(err){
-    console.error('GitHub sync error:', err);
-    return { ok:false, error: err.message };
+  const sha = await ghGetFileSha(path);
+  const body = {
+    message: `Update order ${order.trackingId} — ${order.currentStatus}`,
+    content: b64EncodeUnicode(JSON.stringify(buildPublicOrder(order), null, 2)),
+    branch: cfg.branch
+  };
+  if(sha) body.sha = sha;
+  const res = await fetch(ghApiUrl(path), {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${getGithubToken()}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(res.status === 409 && attempt < 3){
+    // Someone else's write (or our own previous update) landed first —
+    // re-read the current SHA and try again.
+    await new Promise(r => setTimeout(r, 300 * attempt));
+    return pushOrderToGitHubAttempt(order, attempt + 1);
   }
+  if(!res.ok){
+    const errText = await res.text();
+    throw new Error(`GitHub push failed (${res.status}): ${errText.slice(0,150)}`);
+  }
+  return true;
+}
+
+/* Ensures only one push per trackingId runs at a time, so two rapid
+   status updates on the same order can't race each other's SHA reads. */
+const _ghPushQueues = {};
+function pushOrderToGitHub(order){
+  if(!isGithubSyncConfigured()) return Promise.resolve({ ok:false, skipped:true });
+  const key = order.trackingId;
+  const previous = _ghPushQueues[key] || Promise.resolve();
+  const run = previous
+    .catch(() => {}) // don't let a prior failure block this one
+    .then(() => pushOrderToGitHubAttempt(order, 1))
+    .then(() => {
+      localStorage.setItem('nexserve_last_gh_sync', new Date().toISOString());
+      return { ok:true };
+    })
+    .catch(err => {
+      console.error('GitHub sync error:', err);
+      return { ok:false, error: err.message };
+    });
+  _ghPushQueues[key] = run;
+  return run;
 }
 
 /* Remove an order's file from GitHub when the order is deleted in admin. */
-async function deleteOrderFromGitHub(trackingId){
-  if(!isGithubSyncConfigured()) return { ok:false, skipped:true };
-  const cfg = resolveGitHubRepoInfo();
-  const path = ghFilePath(trackingId);
-  try{
-    const sha = await ghGetFileSha(path);
-    if(!sha) return { ok:true }; // already gone
-    const res = await fetch(ghApiUrl(path), {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${getGithubToken()}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message: `Delete order ${trackingId}`, sha, branch: cfg.branch })
+function deleteOrderFromGitHub(trackingId){
+  if(!isGithubSyncConfigured()) return Promise.resolve({ ok:false, skipped:true });
+  const key = trackingId;
+  const previous = _ghPushQueues[key] || Promise.resolve();
+  const run = previous
+    .catch(() => {})
+    .then(async () => {
+      const cfg = resolveGitHubRepoInfo();
+      const path = ghFilePath(trackingId);
+      const sha = await ghGetFileSha(path);
+      if(!sha) return { ok:true }; // already gone
+      const res = await fetch(ghApiUrl(path), {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getGithubToken()}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: `Delete order ${trackingId}`, sha, branch: cfg.branch })
+      });
+      if(!res.ok) throw new Error(`GitHub delete failed (${res.status})`);
+      return { ok:true };
+    })
+    .catch(err => {
+      console.error('GitHub delete error:', err);
+      return { ok:false, error: err.message };
     });
-    if(!res.ok) throw new Error(`GitHub delete failed (${res.status})`);
-    return { ok:true };
-  }catch(err){
-    console.error('GitHub delete error:', err);
-    return { ok:false, error: err.message };
-  }
+  _ghPushQueues[key] = run;
+  return run;
 }
 
 /* Fire-and-forget wrapper used throughout the admin UI so order saves are
