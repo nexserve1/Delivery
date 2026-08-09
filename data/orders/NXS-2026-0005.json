@@ -7,10 +7,10 @@
   "quantity": 1,
   "orderDate": "2026-08-09T00:00:00.000Z",
   "expectedDelivery": "2026-12-08T00:00:00.000Z",
-  "currentStatus": "Out for Delivery",
+  "currentStatus": "Delivered",
   "currentLocation": "",
   "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-09T13:50:43.673Z",
+  "updatedAt": "2026-08-09T13:51:29.066Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -45,6 +45,18 @@
     {
       "status": "Out for Delivery",
       "date": "2026-08-09T13:50:43.673Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Delivered",
+      "date": "2026-08-09T13:51:09.253Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Delivered",
+      "date": "2026-08-09T13:51:29.066Z",
       "note": "Order received and confirmed in system.",
       "location": ""
     }
