@@ -7,10 +7,10 @@
   "quantity": 1,
   "orderDate": "2026-08-09T00:00:00.000Z",
   "expectedDelivery": "2026-02-09T00:00:00.000Z",
-  "currentStatus": "Payment Confirmed",
+  "currentStatus": "Product Testing",
   "currentLocation": "",
-  "latestUpdate": "Order received and Payment Done",
-  "updatedAt": "2026-08-09T13:57:35.706Z",
+  "latestUpdate": "Under Testing",
+  "updatedAt": "2026-08-09T13:58:53.155Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -22,6 +22,30 @@
       "status": "Payment Confirmed",
       "date": "2026-08-09T13:57:35.706Z",
       "note": "Order received and Payment Done",
+      "location": ""
+    },
+    {
+      "status": "Processing",
+      "date": "2026-08-09T13:58:00.389Z",
+      "note": "under processing",
+      "location": ""
+    },
+    {
+      "status": "Processing",
+      "date": "2026-08-09T13:58:10.325Z",
+      "note": "under processing",
+      "location": ""
+    },
+    {
+      "status": "Product Testing",
+      "date": "2026-08-09T13:58:33.165Z",
+      "note": "Under Testing",
+      "location": ""
+    },
+    {
+      "status": "Product Testing",
+      "date": "2026-08-09T13:58:53.155Z",
+      "note": "Under Testing",
       "location": ""
     }
   ]
