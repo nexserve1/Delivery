@@ -7,10 +7,10 @@
   "quantity": 1,
   "orderDate": "2026-08-09T00:00:00.000Z",
   "expectedDelivery": "",
-  "currentStatus": "Product Testing",
+  "currentStatus": "Ready for Dispatch",
   "currentLocation": "",
   "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-09T19:28:34.678Z",
+  "updatedAt": "2026-08-09T19:29:14.815Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -21,6 +21,18 @@
     {
       "status": "Product Testing",
       "date": "2026-08-09T19:28:34.678Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Packing",
+      "date": "2026-08-09T19:28:53.498Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Ready for Dispatch",
+      "date": "2026-08-09T19:29:14.815Z",
       "note": "Order received and confirmed in system.",
       "location": ""
     }
