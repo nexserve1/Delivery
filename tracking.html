@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Your Order — Nexserve IT Solutions</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="track-page">
+
+<div class="track-hero">
+  <div class="track-hero-inner">
+    <div class="track-brand">
+      <div class="brand-mark">N</div>
+      <div>
+        <div class="login-brand-name">Nexserve IT Solutions</div>
+        <div class="login-brand-sub" id="companyWebsite">nexserveitsolutions.com</div>
+      </div>
+    </div>
+    <h1 style="font-size:26px;">Track Your Order</h1>
+    <p style="color:#AEB9CE;margin-top:6px;font-size:13.5px;">Enter your tracking ID to see live status and delivery updates.</p>
+    <div class="track-search" style="margin-top:18px;">
+      <input type="text" id="trackInput" placeholder="e.g. NXS-2026-0001" class="mono">
+      <button class="btn btn-accent" onclick="doTrack()">Track</button>
+    </div>
+  </div>
+</div>
+
+<div class="track-wrap" id="trackResult"></div>
+
+<div class="track-footer" id="trackFooter">
+  &copy; <span id="footYear"></span> Nexserve IT Solutions · nexserveitsolutions.com
+</div>
+
+<script src="storage.js"></script>
+<script src="tracking.js"></script>
+</body>
+</html>

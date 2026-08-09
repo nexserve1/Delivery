@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Nexserve IT Solutions</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">N</div>
+      <div>
+        <div class="login-brand-name">Nexserve IT Solutions</div>
+        <div class="login-brand-sub">Order &amp; Delivery Tracking</div>
+      </div>
+    </div>
+    <h1>Admin Login</h1>
+    <p class="login-sub">Sign in to manage orders and deliveries.</p>
+    <div class="login-error hidden" id="loginError"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" autocomplete="username" required placeholder="admin">
+      </div>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="••••••••••">
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="loginRemember" style="width:auto;">
+        <label for="loginRemember" style="margin:0;font-weight:500;color:#B8C2D6;">Keep me signed in on this device</label>
+      </div>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+    <div class="login-hint">
+      This is a frontend-only demo login stored locally in your browser — it is <strong>not</strong> production-grade security. For real multi-user access control, connect a backend such as Firebase or Supabase.
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP SHELL ===================== -->
+<div class="app-shell hidden" id="appShell">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">N</div>
+      <div>
+        <div class="brand-name">Nexserve IT Solutions</div>
+        <div class="brand-tag">Admin Panel</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item" data-view="dashboard" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-view="orders" onclick="navigate('orders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5 12 3l9 4.5M3 7.5v9L12 21l9-4.5v-9M12 12v9"/></svg>
+        Orders
+      </button>
+      <button class="nav-item" data-view="orders" onclick="navigate('orders'); setTimeout(()=>openOrderModal(),50)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Create Order
+      </button>
+      <button class="nav-item" data-view="tracking" onclick="navigate('tracking')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Tracking
+      </button>
+      <button class="nav-item" data-view="customers" onclick="navigate('customers')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="18" cy="9" r="2.7"/><path d="M15.5 20a5 5 0 0 1 6.9-4.6"/></svg>
+        Customers
+      </button>
+      <button class="nav-item" data-view="reports" onclick="navigate('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg>
+        Reports
+      </button>
+      <button class="nav-item" data-view="backup" onclick="navigate('backup')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+        Backup &amp; Restore
+      </button>
+      <button class="nav-item" data-view="settings" onclick="navigate('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></svg>
+        Settings
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-block" style="background:var(--navy-800);color:#fff;border-color:var(--navy-600);" onclick="handleLogoutClick()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div>
+          <h2 id="topbarTitle">Dashboard</h2>
+          <div class="topbar-sub" id="topbarSub">Here's what's happening with your orders today.</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-chip">
+          <div class="admin-avatar">A</div>
+          <span class="admin-name-text" style="font-size:12.5px;font-weight:600;">Admin</span>
+        </div>
+      </div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<!-- Modal root -->
+<div class="hidden" id="modalRoot"></div>
+<!-- Toasts -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="storage.js"></script>
+<script src="app.js"></script>
+<script src="orders-ui.js"></script>
+<script>
+  function handleLogoutClick(){
+    if(confirm('Are you sure you want to log out?')) logout();
+  }
+  setupLoginForm();
+  renderAuthGate();
+</script>
+</body>
+</html>
