@@ -7,14 +7,51 @@ A complete, static, LocalStorage-powered order tracking dashboard for **Nexserve
 ## Files
 
 ```
-index.html      Admin login + dashboard (SPA)
-tracking.html   Public customer tracking page (no login)
-style.css       Design system + all component styles
-storage.js      Storage layer (LocalStorage) — the ONLY file that touches localStorage directly
-app.js          Admin dashboard logic: auth, views, search/filter, reports, backup, settings
-orders-ui.js    Order create/edit modal, order detail, status updates, WhatsApp messaging
-tracking.js     Public tracking page logic
+index.html         Admin login + dashboard (SPA)
+tracking.html       Public customer tracking page (no login)
+style.css            Design system + all component styles
+storage.js           Storage layer (LocalStorage) — the ONLY file that touches localStorage directly
+github-config.js     PUBLIC repo config (owner/repo/branch/folder) — no secrets, safe to commit
+github-sync.js       Admin-only: pushes/deletes per-order JSON files on GitHub (needs a token)
+app.js               Admin dashboard logic: auth, views, search/filter, reports, backup, settings
+orders-ui.js         Order create/edit modal, order detail, status updates, WhatsApp messaging
+tracking.js          Public tracking page logic (fetches live status from GitHub)
 ```
+
+## 0. Free cross-device tracking via GitHub (recommended setup)
+
+By default, order data lives only in the admin's browser (LocalStorage), so a tracking link only works on that same device. To make tracking links work on **any device for free**, this project can sync each order to your own GitHub repo as a small JSON file — no paid database needed.
+
+**How it works:** every time you create an order or update its status, the admin app pushes a *public-safe* copy of that one order to `data/orders/<trackingId>.json` in your GitHub repo (via the GitHub API, directly from the browser). The public `tracking.html` page reads that same file straight from GitHub — so it works from any device, instantly, for free. Only non-sensitive fields are ever sent (see "What gets shared" below).
+
+### Setup (one-time, ~5 minutes)
+
+1. **Create a free GitHub account** at github.com if you don't have one.
+2. **Create a new repository** — public, e.g. `nexserve-orders`. (It needs to be public so the tracking page can read files from it without a token; only push access is protected by your token.)
+3. **Push this project's files** to that repo (all files at the repo root — see "Deploy to GitHub Pages" below).
+4. **Enable GitHub Pages**: repo → Settings → Pages → set Source to your branch (e.g. `main`) and root folder → Save.
+5. **Create a Personal Access Token**: GitHub → Settings (your profile, not the repo) → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token.
+   - Repository access: **Only select repositories** → choose your `nexserve-orders` repo.
+   - Permissions: **Contents → Read and write**. Leave everything else as "No access".
+   - Copy the generated token (starts with `github_pat_...`) — you won't see it again.
+6. In the admin app, go to **Settings → GitHub Sync**:
+   - Owner/Repo/Branch/Folder are usually auto-filled correctly if you're on `https://yourusername.github.io/nexserve-orders/`. Adjust if needed.
+   - Paste your token, click **Save GitHub Settings**, then **Test Connection**.
+   - Click **Sync All Orders Now** once to push any existing orders.
+7. From now on, every new order and every status update syncs automatically. Share `tracking.html?id=NXS-2026-0001` with anyone, any device — it will show the live status.
+
+### What gets shared to GitHub (public-safe fields only)
+
+`trackingId`, `orderId`, `customerName`, `product`, `model`, `quantity`, `orderDate`, `expectedDelivery`, `currentStatus`, `currentLocation`, `latestUpdate`, `updatedAt`, and the status `timeline`.
+
+**Never sent to GitHub:** mobile number, WhatsApp number, email, address, city, state, pincode, payment status/method, selling price, delivery charge, internal notes, or the uploaded invoice file. Those stay only in the admin's browser LocalStorage.
+
+### Important limitations of this approach
+
+- Since the repo must be **public** for the tracking page to read data without a token, anyone who knows or guesses a tracking ID (they're sequential, e.g. `NXS-2026-0001`, `0002`...) can view that one order's public-safe file. This is the same trade-off as most low-cost courier tracking pages — just don't put sensitive data in the synced fields (this app already filters it out for you).
+- The GitHub token is only stored in the **admin's own browser** and gives write access to your repo — don't share your screen/devtools with it visible, and don't paste it anywhere else.
+- If GitHub sync isn't configured yet, tracking still works from the **same browser** the order was created in (LocalStorage fallback) — useful for testing before you finish setup.
+- A GitHub Pages rebuild isn't required for tracking updates to show — `tracking.js` reads the raw file directly from GitHub, which updates within seconds of an admin change (much faster than waiting for a Pages deploy).
 
 ## 1. How to run locally
 
@@ -82,13 +119,14 @@ Still on **Backup & Restore**: choose your `nexserve-orders-backup.json` file an
 
 ## 9. How to deploy to GitHub Pages
 
-1. Create a new GitHub repository and push all six files to it (no build step needed).
+1. Create a new GitHub repository and push all project files to it (no build step needed) — this is the same repo used for GitHub Sync in section 0.
 2. In the repo, go to **Settings → Pages**.
 3. Under **Source**, choose the branch (e.g. `main`) and root folder, then save.
 4. Your app will be live at:
    - Admin: `https://YOUR-USERNAME.github.io/YOUR-REPO/index.html`
    - Customer tracking: `https://YOUR-USERNAME.github.io/YOUR-REPO/tracking.html?id=NXS-2026-0001`
 5. All paths in the project are relative, so it works from any subfolder/repo name without changes.
+6. Complete the GitHub Sync setup in section 0 so tracking links work across devices, not just the admin's own browser.
 
 ## 10. Important LocalStorage limitations
 

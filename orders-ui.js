@@ -221,6 +221,7 @@ function submitOrderForm(existingId){
     closeModal();
     if(STATE.view === 'orders') renderView('orders'); else renderView(STATE.view);
     if(document.getElementById('orderDetailRoot')) openOrderDetail(existingId);
+    syncOrderToGitHubBackground(updated);
   }else{
     payload.currentStatus = 'Order Received';
     payload.currentLocation = '';
@@ -231,6 +232,7 @@ function submitOrderForm(existingId){
     closeModal();
     renderView(STATE.view === 'dashboard' || STATE.view === 'orders' ? STATE.view : 'orders');
     openOrderDetail(created.id);
+    syncOrderToGitHubBackground(created);
   }
 }
 
@@ -253,10 +255,12 @@ function confirmDeleteOrder(id){
   `);
 }
 function doDeleteOrder(id){
+  const order = getOrderById(id);
   deleteOrder(id);
   closeModal();
   toast('Order deleted.', 'success');
   renderView(STATE.view === 'dashboard' ? 'dashboard' : 'orders');
+  if(order) deleteOrderFromGitHubBackground(order.trackingId);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -417,6 +421,7 @@ function submitStatusUpdate(orderId, sendWhatsApp){
   DETAIL_TAB = 'timeline';
   document.getElementById('orderDetailRoot') && (document.getElementById('modalRoot').innerHTML = renderOrderDetailModal(updated));
   if(STATE.view === 'orders' || STATE.view === 'dashboard') renderView(STATE.view);
+  syncOrderToGitHubBackground(updated);
 
   if(sendWhatsApp) sendStatusUpdateWhatsApp(orderId);
 }

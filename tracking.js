@@ -1,7 +1,8 @@
 /* ==========================================================================
    NEXSERVE — tracking.js
-   Public, no-login tracking page. Reads the SAME LocalStorage orders array
-   (this device/browser only — LocalStorage is not shared across devices).
+   Public, no-login tracking page. Fetches the shared order status from
+   GitHub (works on any device) with a LocalStorage fallback for local
+   testing before GitHub sync is set up.
 
    PRIVACY: only a safe subset of order fields is ever rendered here.
    Never render: paymentStatus, paymentMethod, amount, deliveryCharge,
@@ -24,14 +25,39 @@ function doTrack(){
   renderResult(id);
 }
 
-function renderResult(trackingId){
+function ghRawUrl(trackingId){
+  const cfg = resolveGitHubRepoInfo();
+  if(!cfg.owner || !cfg.repo) return null;
+  return `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${cfg.folder}/${encodeURIComponent(trackingId)}.json?t=${Date.now()}`;
+}
+
+/* Looks up an order for the tracking page. Tries the shared GitHub copy
+   first (works on any device), and falls back to this browser's local
+   LocalStorage copy (useful for local testing before GitHub is set up). */
+async function fetchOrderForTracking(trackingId){
+  const url = ghRawUrl(trackingId);
+  if(url){
+    try{
+      const res = await fetch(url, { cache: 'no-store' });
+      if(res.ok){
+        const data = await res.json();
+        return { order: data, source: 'github' };
+      }
+    }catch(e){ /* network/offline — fall through to local */ }
+  }
+  const local = getOrderByTrackingId(trackingId);
+  return local ? { order: local, source: 'local' } : { order: null, source: null };
+}
+
+async function renderResult(trackingId){
   const box = document.getElementById('trackResult');
   const settings = getSettings();
   document.getElementById('companyWebsite').textContent = settings.website;
 
   if(!trackingId){ box.innerHTML = ''; return; }
 
-  const order = getOrderByTrackingId(trackingId);
+  box.innerHTML = `<div class="track-status-card" style="text-align:center;color:var(--text-faint);padding:40px 20px;">Looking up your order…</div>`;
+  const { order, source } = await fetchOrderForTracking(trackingId);
   if(!order){
     box.innerHTML = `
       <div class="track-status-card track-not-found">

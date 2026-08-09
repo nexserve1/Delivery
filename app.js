@@ -482,6 +482,9 @@ function doImportBackup(){
 /* ---------------------------------------------------------------------- */
 function renderSettingsView(){
   const s = getSettings();
+  const cfg = resolveGitHubRepoInfo();
+  const token = getGithubToken();
+  const lastSync = localStorage.getItem('nexserve_last_gh_sync');
   return `
     <div class="panel">
       <div class="panel-body">
@@ -499,7 +502,59 @@ function renderSettingsView(){
         </form>
       </div>
     </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>GitHub Sync (free, cross-device tracking)</h3></div>
+      <div class="panel-body">
+        <div class="storage-warn" style="margin-bottom:16px;">
+          ${iconAlert()}
+          <div>This makes your tracking links work on <strong>any device</strong>, completely free, using your own GitHub repo as storage. Your token stays only in this browser and is never included in backups. Use a <strong>fine-grained token scoped to this one repo only</strong>, with just "Contents: Read and write" permission. Keep this Settings page private.</div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>GitHub Username (owner)</label><input id="ghOwner" value="${esc(cfg.owner)}" placeholder="e.g. yourusername"></div>
+          <div class="field"><label>Repository Name</label><input id="ghRepo" value="${esc(cfg.repo)}" placeholder="e.g. nexserve-orders"></div>
+          <div class="field"><label>Branch</label><input id="ghBranch" value="${esc(cfg.branch)}" placeholder="main"></div>
+          <div class="field"><label>Folder for order files</label><input id="ghFolder" value="${esc(cfg.folder)}" placeholder="data/orders"></div>
+          <div class="field span-2"><label>GitHub Personal Access Token</label><input id="ghToken" type="password" value="${esc(token)}" placeholder="paste your fine-grained token here"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;">
+          <button class="btn btn-accent" onclick="saveGithubSettings()">Save GitHub Settings</button>
+          <button class="btn" onclick="handleTestGithub()">Test Connection</button>
+          <button class="btn btn-indigo" onclick="handleSyncAll()">Sync All Orders Now</button>
+        </div>
+        <p class="mini-row-sub" style="margin-top:12px;">Status: ${isGithubSyncConfigured() ? '<strong style="color:var(--green-500)">Configured</strong>' : '<strong style="color:var(--amber-500)">Not configured yet</strong>'} · Last synced: ${lastSync ? fmtDateTime(lastSync) : 'Never'}</p>
+        <div id="ghTestResult" style="margin-top:10px;"></div>
+        <div id="ghSyncProgress" style="margin-top:10px;"></div>
+      </div>
+    </div>
   `;
+}
+function saveGithubSettings(){
+  const owner = document.getElementById('ghOwner').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const folder = document.getElementById('ghFolder').value.trim() || 'data/orders';
+  const token = document.getElementById('ghToken').value.trim();
+  localStorage.setItem('nexserve_github_repo_override', JSON.stringify({ owner, repo, branch, folder }));
+  saveGithubToken(token);
+  toast('GitHub settings saved.', 'success');
+  renderView('settings');
+}
+async function handleTestGithub(){
+  const box = document.getElementById('ghTestResult');
+  box.innerHTML = '<span class="mini-row-sub">Testing connection…</span>';
+  const result = await testGithubConnection();
+  box.innerHTML = `<div class="storage-warn" style="background:${result.ok ? 'var(--green-100)' : 'var(--red-100)'};color:${result.ok ? '#15803D' : '#B91C1C'}">${result.message}${result.ok && result.isPrivate ? '<br><strong>Note:</strong> this repo is private — the public tracking page needs a public repo to read data without a token.' : ''}</div>`;
+}
+async function handleSyncAll(){
+  const box = document.getElementById('ghSyncProgress');
+  if(!isGithubSyncConfigured()){ toast('Please save valid GitHub settings first.', 'error'); return; }
+  box.innerHTML = '<span class="mini-row-sub">Syncing orders to GitHub…</span>';
+  const result = await syncAllOrdersToGitHub((done, total) => {
+    box.innerHTML = `<span class="mini-row-sub">Syncing… ${done}/${total}</span>`;
+  });
+  box.innerHTML = `<span class="mini-row-sub">Done — ${result.done} synced${result.failed ? `, ${result.failed} failed` : ''} out of ${result.total}.</span>`;
+  toast('GitHub sync complete.', result.failed ? 'error' : 'success');
 }
 function wireSettingsForm(){
   const form = document.getElementById('settingsForm');
