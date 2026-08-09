@@ -7,15 +7,21 @@
   "quantity": 1,
   "orderDate": "2026-08-09T00:00:00.000Z",
   "expectedDelivery": "",
-  "currentStatus": "Order Received",
+  "currentStatus": "Product Testing",
   "currentLocation": "",
   "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-09T19:28:26.883Z",
+  "updatedAt": "2026-08-09T19:28:34.678Z",
   "timeline": [
     {
       "status": "Order Received",
       "date": "2026-08-09T19:28:26.883Z",
       "note": "Order created in system.",
+      "location": ""
+    },
+    {
+      "status": "Product Testing",
+      "date": "2026-08-09T19:28:34.678Z",
+      "note": "Order received and confirmed in system.",
       "location": ""
     }
   ]
