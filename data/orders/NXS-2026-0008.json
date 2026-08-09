@@ -1,0 +1,22 @@
+{
+  "trackingId": "NXS-2026-0008",
+  "orderId": "ORD-656626",
+  "customerName": "Tarun",
+  "product": "DELL",
+  "model": "",
+  "quantity": 1,
+  "orderDate": "2026-08-09T00:00:00.000Z",
+  "expectedDelivery": "",
+  "currentStatus": "Order Received",
+  "currentLocation": "",
+  "latestUpdate": "Order received and confirmed in system.",
+  "updatedAt": "2026-08-09T19:28:26.883Z",
+  "timeline": [
+    {
+      "status": "Order Received",
+      "date": "2026-08-09T19:28:26.883Z",
+      "note": "Order created in system.",
+      "location": ""
+    }
+  ]
+}
