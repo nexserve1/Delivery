@@ -10,7 +10,7 @@
   "currentStatus": "Out for Delivery",
   "currentLocation": "",
   "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-09T13:35:54.931Z",
+  "updatedAt": "2026-08-09T13:50:43.673Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -39,6 +39,12 @@
     {
       "status": "Out for Delivery",
       "date": "2026-08-09T13:35:54.931Z",
+      "note": "Order received and confirmed in system.",
+      "location": ""
+    },
+    {
+      "status": "Out for Delivery",
+      "date": "2026-08-09T13:50:43.673Z",
       "note": "Order received and confirmed in system.",
       "location": ""
     }
