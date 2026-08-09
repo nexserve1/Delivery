@@ -28,7 +28,12 @@ function doTrack(){
 function ghRawUrl(trackingId){
   const cfg = resolveGitHubRepoInfo();
   if(!cfg.owner || !cfg.repo) return null;
-  return `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${cfg.folder}/${encodeURIComponent(trackingId)}.json?t=${Date.now()}`;
+  // Uses the GitHub Contents API (not the raw.githubusercontent.com CDN,
+  // which can cache files for up to ~5 minutes). The API endpoint returns
+  // near-instant updates. Unauthenticated requests are rate-limited to
+  // 60/hour per visitor IP, which is fine for normal tracking-page use.
+  const path = `${cfg.folder}/${encodeURIComponent(trackingId)}.json`;
+  return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${encodeURIComponent(cfg.branch)}&t=${Date.now()}`;
 }
 
 /* Looks up an order for the tracking page. Tries the shared GitHub copy
@@ -38,7 +43,10 @@ async function fetchOrderForTracking(trackingId){
   const url = ghRawUrl(trackingId);
   if(url){
     try{
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(url, {
+        cache: 'no-store',
+        headers: { Accept: 'application/vnd.github.raw+json' }
+      });
       if(res.ok){
         const data = await res.json();
         return { order: data, source: 'github' };
