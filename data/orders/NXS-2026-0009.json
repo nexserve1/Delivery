@@ -7,10 +7,10 @@
   "quantity": 1,
   "orderDate": "2026-08-10T00:00:00.000Z",
   "expectedDelivery": "2026-08-15T00:00:00.000Z",
-  "currentStatus": "Payment Confirmed",
+  "currentStatus": "Processing",
   "currentLocation": "Delhi NCR HUB",
-  "latestUpdate": "Payment Confirmed",
-  "updatedAt": "2026-08-10T15:41:26.544Z",
+  "latestUpdate": "Order Under Processing",
+  "updatedAt": "2026-08-10T15:43:51.399Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -28,6 +28,12 @@
       "status": "Payment Confirmed",
       "date": "2026-08-10T15:41:26.544Z",
       "note": "Payment Confirmed",
+      "location": "Delhi NCR HUB"
+    },
+    {
+      "status": "Processing",
+      "date": "2026-08-10T15:43:51.399Z",
+      "note": "Order Under Processing",
       "location": "Delhi NCR HUB"
     }
   ]
