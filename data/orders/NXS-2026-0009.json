@@ -7,16 +7,22 @@
   "quantity": 1,
   "orderDate": "2026-08-10T00:00:00.000Z",
   "expectedDelivery": "2026-12-08T00:00:00.000Z",
-  "currentStatus": "Order Received",
-  "currentLocation": "",
-  "latestUpdate": "Order received and confirmed in system.",
-  "updatedAt": "2026-08-10T15:33:16.693Z",
+  "currentStatus": "Order Confirmed",
+  "currentLocation": "Delhi NCR HUB",
+  "latestUpdate": "Order Confirmed",
+  "updatedAt": "2026-08-10T15:39:31.927Z",
   "timeline": [
     {
       "status": "Order Received",
       "date": "2026-08-10T15:33:16.693Z",
       "note": "Order created in system.",
       "location": ""
+    },
+    {
+      "status": "Order Confirmed",
+      "date": "2026-08-10T15:39:31.927Z",
+      "note": "Order Confirmed",
+      "location": "Delhi NCR HUB"
     }
   ]
 }
