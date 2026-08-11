@@ -7,10 +7,10 @@
   "quantity": 1,
   "orderDate": "2026-08-10T00:00:00.000Z",
   "expectedDelivery": "2026-08-15T00:00:00.000Z",
-  "currentStatus": "Product Testing",
-  "currentLocation": "Ghaziabad HUB",
-  "latestUpdate": "Product Recieved and Under Testing",
-  "updatedAt": "2026-08-11T04:34:17.900Z",
+  "currentStatus": "Ready for Dispatch",
+  "currentLocation": "At Delivery Parner",
+  "latestUpdate": "Ready For Dispatch",
+  "updatedAt": "2026-08-11T14:04:29.540Z",
   "timeline": [
     {
       "status": "Order Received",
@@ -41,6 +41,18 @@
       "date": "2026-08-11T04:34:17.900Z",
       "note": "Product Recieved and Under Testing",
       "location": "Ghaziabad HUB"
+    },
+    {
+      "status": "Packing",
+      "date": "2026-08-11T14:02:10.956Z",
+      "note": "Under Packing",
+      "location": "Ghaziabad HUB"
+    },
+    {
+      "status": "Ready for Dispatch",
+      "date": "2026-08-11T14:04:29.540Z",
+      "note": "Ready For Dispatch",
+      "location": "At Delivery Parner"
     }
   ]
 }
