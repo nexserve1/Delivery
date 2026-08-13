@@ -486,25 +486,24 @@ function sendTrackingLinkWhatsApp(orderId){
   const settings = getSettings();
   const link = `${getTrackingBaseUrl()}?id=${encodeURIComponent(order.trackingId)}`;
   const msg =
-`Hello ${order.customerName} 👋
+`Hello ${order.customerName},
 
 Your order from ${settings.companyName} has been successfully received.
 
-📦 Order ID: ${order.orderId}
-🔎 Tracking ID: ${order.trackingId}
-💻 Product: ${order.product}
+*Order ID:* ${order.orderId}
+*Tracking ID:* ${order.trackingId}
+*Product:* ${order.product}
 
 You can track your order anytime using the link below:
-
 ${link}
 
-📅 Expected Delivery: ${order.expectedDelivery ? fmtDate(order.expectedDelivery) : 'To be confirmed'}
+*Expected Delivery:* ${order.expectedDelivery ? fmtDate(order.expectedDelivery) : 'To be confirmed'}
 
 Thank you for choosing ${settings.companyName}.
 
 For support:
-📞 ${settings.phone}
-🌐 ${settings.website}`;
+${settings.phone}
+${settings.website}`;
   window.open(buildWhatsAppUrl(order.whatsapp || order.mobile, msg), '_blank');
 }
 
@@ -513,27 +512,21 @@ function sendStatusUpdateWhatsApp(orderId){
   const settings = getSettings();
   const link = `${getTrackingBaseUrl()}?id=${encodeURIComponent(order.trackingId)}`;
   const msg =
-`Hello ${order.customerName} 👋
+`Hello ${order.customerName},
 
-Your ${settings.companyName} order update:
+Here is an update on your ${settings.companyName} order.
 
-📦 Tracking ID: ${order.trackingId}
+*Tracking ID:* ${order.trackingId}
+*Current Status:* ${order.currentStatus}
+*Current Location:* ${order.currentLocation || 'Update in progress'}
+*Expected Delivery:* ${order.expectedDelivery ? fmtDate(order.expectedDelivery) : 'To be confirmed'}
 
-Current Status:
-🚚 ${order.currentStatus}
-
-📍 Current Location:
-${order.currentLocation || 'Update in progress'}
-
-📅 Expected Delivery:
-${order.expectedDelivery ? fmtDate(order.expectedDelivery) : 'To be confirmed'}
-
-Track your order:
+Track your order here:
 ${link}
 
 Thank you,
 ${settings.companyName}
-📞 ${settings.phone}`;
+${settings.phone}`;
   window.open(buildWhatsAppUrl(order.whatsapp || order.mobile, msg), '_blank');
 }
 
